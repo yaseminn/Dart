@@ -26,8 +26,8 @@ class Room {
 }
 
 class Astreoid {
-  num xCoordinate;
-  num yCoordinate;
+  num x;
+  num y;
   String color;
   int radius;
   num vx;
@@ -44,7 +44,7 @@ class Astreoid {
   static const int LARGE = 3;
 
   // For now,
-  Astreoid(this.xCoordinate, this.yCoordinate, this.radius, this.choice) {
+  Astreoid(this.x, this.y, this.radius, this.choice) {
     switch (choice) {
       case SMALL:
         image = new ImageElement(src: "small.png");
@@ -70,7 +70,7 @@ class Astreoid {
   static const num thickness = 2.0;
 
   void draw(CanvasRenderingContext2D context) {
-    context.drawImage(image, xCoordinate, yCoordinate);
+    context.drawImage(image, x, y);
   }
 
   static const double xCoordianate = 800.0;
@@ -78,30 +78,33 @@ class Astreoid {
 
   void animate() {
     //velocity
-    xCoordinate += vx;
-    yCoordinate += vy;
+    x += vx;
+    y += vy;
 
     //change y direction
-    if (yCoordinate <= -height) {
-      yCoordinate = yCoordianate;
-    } else if (yCoordinate >= yCoordianate) {
-      yCoordinate = -height.toDouble();
+    if (y <= -height) {
+      y = yCoordianate;
+    } else if (y >= yCoordianate) {
+      y = -height.toDouble();
     }
 
-    if (xCoordinate <= -width) {
-      xCoordinate = xCoordianate;
-    } else if (xCoordinate >= xCoordianate) {
-      xCoordinate = -width.toDouble();
+    if (x <= -width) {
+      x = xCoordianate;
+    } else if (x >= xCoordianate) {
+      x = -width.toDouble();
     }
-
   }
+
   double getRandomDouble(double min, double max) => randNum.nextDouble() * (max
       - min) + min;
 
   //point in the rectangle or not
-  bool hitTheBullet(Bullet bullet) => (xCoordinate <= bullet.x) && (xCoordinate
-      + width >= bullet.x) && (bullet.y >= yCoordinate) && (bullet.y <= yCoordinate +
-      height);
+  bool hitTheBullet(Bullet bullet) => (x <= bullet.x) && (x + width >= bullet.x)
+      && (bullet.y >= y) && (bullet.y <= y + height);
+
+  bool hitShip(SpaceShip ship) => !((ship.x + ship.width < x) || (ship.y +
+      ship.height < y) || (ship.x > x + width) || (ship.y > y + height));
+
 }
 
 class Bullet {
@@ -292,66 +295,78 @@ class Game {
   }
 
   void createTwoAstreoids(int j, int choice) {
-
     if (choice - 1 == 0) {
       astreoids.removeAt(j);
     } else {
-      astreoids.add(new Astreoid(astreoids[j].xCoordinate,
-          astreoids[j].yCoordinate, randNum.nextInt(50), choice - 1));
+      astreoids.add(new Astreoid(astreoids[j].x, astreoids[j].y,
+          randNum.nextInt(50), choice - 1));
 
-      astreoids.add(new Astreoid(astreoids[j].xCoordinate + 1,
-          astreoids[j].yCoordinate + 1, randNum.nextInt(50), choice - 1));
+      astreoids.add(new Astreoid(astreoids[j].x + 1, astreoids[j].y + 1,
+          randNum.nextInt(50), choice - 1));
       astreoids.removeAt(j);
     }
 
   }
 
   void drawAll(num _) {
-
-      for (int i = 0; i < bullets.length; ++i) {
-        bool hit = false;
-        for (int j = 0; j < astreoids.length; ++j) {
-          if (astreoids[j].hitTheBullet(bullets[i])) {
-            createTwoAstreoids(j, astreoids[j].choice);
-            hit = true;
-            break;
-          }
-        }
-        if (hit) {
-          bullets.removeAt(i);
-        }
+    bool hitShip = false;
+    for (int j = 0; j < astreoids.length; ++j) {
+      if (astreoids[j].hitShip(ship)) {
+        createTwoAstreoids(j, astreoids[j].choice);
+        print("ship Asreoid collision");
+        hitShip = true;
+        break;
       }
-
-      for (Astreoid a in astreoids) {
-        a.animate();
-      }
-
-      // if bullet is out of screen or collided with asteroids, it should be removed.
-      for (int i = 0; i < bullets.length; i++) {
-        if (bullets[i].outOfScreen(room)) {
-          bullets.removeAt(i);
-        }
-      }
-
-      for (Bullet b in bullets) {
-        b.animate();
-      }
-
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      // draw everything.
-      room.draw(context);
-      for (Bullet b in bullets) {
-        b.draw(context);
-      }
-      ship.draw(context);
-      ship.move();
-      for (Astreoid a in astreoids) {
-        a.draw(context);
-      }
-      requestRedraw();
     }
 
+    if (hitShip) {
+      gameOver = true;
+      print("oyun bitti");
+    }
+
+    for (int i = 0; i < bullets.length; ++i) {
+      bool hitBullet = false;
+      for (int j = 0; j < astreoids.length; ++j) {
+        if (astreoids[j].hitTheBullet(bullets[i])) {
+          createTwoAstreoids(j, astreoids[j].choice);
+          hitBullet = true;
+          break;
+        }
+      }
+      if (hitBullet) {
+        bullets.removeAt(i);
+      }
+    }
+
+    for (Astreoid a in astreoids) {
+      a.animate();
+    }
+
+    // if bullet is out of screen or collided with asteroids, it should be removed.
+    for (int i = 0; i < bullets.length; i++) {
+      if (bullets[i].outOfScreen(room)) {
+        bullets.removeAt(i);
+      }
+    }
+
+    for (Bullet b in bullets) {
+      b.animate();
+    }
+
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    // draw everything.
+    room.draw(context);
+    for (Bullet b in bullets) {
+      b.draw(context);
+    }
+    ship.draw(context);
+    ship.move();
+    for (Astreoid a in astreoids) {
+      a.draw(context);
+    }
+    requestRedraw();
   }
+}
 
 void main() {
   CanvasElement canvas = querySelector("#area");
