@@ -34,25 +34,16 @@ class Astreoid {
   num vy;
   CanvasElement canvas;
   ImageElement image;
-<<<<<<< HEAD
   int width = 0;
   int height = 0;
   Random randNum = new Random();
   int choice = 0;
-=======
-  List<ImageElement> images;
-  int width = 0;
-  int height = 0;
-  Random randNum = new Random();
-  int animIndex = 0;
->>>>>>> 8cace1563433a04de1be440662c4f7ca7adf2b71
 
   static const int SMALL = 1;
   static const int MEDIUM = 2;
   static const int LARGE = 3;
 
   // For now,
-<<<<<<< HEAD
   Astreoid(this.xCoordinate, this.yCoordinate, this.radius, this.choice) {
     switch (choice) {
       case SMALL:
@@ -75,48 +66,11 @@ class Astreoid {
       print("Image loaded. $width $height");
     });
   }
-=======
-  Astreoid(this.xCoordinate, this.yCoordinate, this.radius, int choice) {
-    images = loadImages("a100", 16);
-    animIndex = 0;
-    vx = getRandomDouble(-1.0, 1.0);
-    vy = getRandomDouble(-1.0, 1.0);
-  }
-
-  List<ImageElement> loadImages(String prefix, int count) {
-    List<ImageElement> images = [];
-    List<Future> onLoads = [];
-    for (int i = 0; i < count; i++) {
-      String filename;
-      filename = i < 10 ? "${prefix}0$i.png" : "${prefix}$i.png";
-      ImageElement e = new ImageElement(src: filename);
-      images.add(e);
-      onLoads.add(e.onLoad.first);
-    }
-
-    Completer c = new Completer.sync();
->>>>>>> 8cace1563433a04de1be440662c4f7ca7adf2b71
-
-    c.complete(Future.wait(onLoads)
-      .then((_) => print("Images loaded. $width $height"))
-      .catchError((e) {
-        print (e.toString());
-      }));
-
-<<<<<<< HEAD
-  void draw(CanvasRenderingContext2D context) {
-    context.drawImage(image, xCoordinate, yCoordinate);
-=======
-    return images;
-  }
 
   static const num thickness = 2.0;
 
   void draw(CanvasRenderingContext2D context) {
-    context.drawImage(images[animIndex], xCoordinate, yCoordinate);
-    animIndex++;
-    animIndex = animIndex % images.length;
->>>>>>> 8cace1563433a04de1be440662c4f7ca7adf2b71
+    context.drawImage(image, xCoordinate, yCoordinate);
   }
 
   static const double xCoordianate = 800.0;
@@ -148,11 +102,6 @@ class Astreoid {
   bool hitTheBullet(Bullet bullet) => (xCoordinate <= bullet.x) && (xCoordinate
       + width >= bullet.x) && (bullet.y >= yCoordinate) && (bullet.y <= yCoordinate +
       height);
-
-
-  double getRandomDouble(double min, double max) =>
-      randNum.nextDouble() * (max - min) + min;
-
 }
 
 class Bullet {
@@ -166,12 +115,7 @@ class Bullet {
 
   Bullet(SpaceShip ship) {
     bullet = new ImageElement(src: "bullet.png");
-<<<<<<< HEAD
     // Adjust velocity etc and angle according to spaceship coordinates and speed.
-=======
-
-        // Adjust velocity etc and angle according to spaceship coordinates and speed.
->>>>>>> 8cace1563433a04de1be440662c4f7ca7adf2b71
     x = ship.x + ship.centerX;
     y = ship.y + ship.centerY;
     // geminin hizi + ayni dogrultuda mermi icin ekstra hiz.
@@ -193,7 +137,6 @@ class Bullet {
     if (y <= 0 || y >= room.height) return true;
     return false;
   }
-<<<<<<< HEAD
 
 }
 
@@ -225,37 +168,6 @@ class SpaceShip {
     });
   }
 
-=======
-}
-
-class SpaceShip {
-  ImageElement firingRockets;
-  ImageElement rocket;
-  double x;
-  double y;
-  double startAngle = -PI / 2;
-  double angleIncrease = 0.0;
-  double vx = 0.0;
-  double vy = 0.0;
-  bool isFiringRoket = false;
-  int width = 0;
-  int height = 0;
-  // Center of the spaceship from x,y corner coordinates.
-  int centerX = 20;
-  int centerY = 30;
-
-  SpaceShip(this.x, this.y) {
-    rocket = new ImageElement(src: "nofire.png");
-    firingRockets = new ImageElement(src: "fire.png");
-    var futures = [rocket.onLoad.first, firingRockets.onLoad.first];
-    Future.wait(futures).then((_) {
-      width = rocket.width;
-      height = rocket.height;
-      print("Images loaded. $width $height");
-    });
-  }
-
->>>>>>> 8cace1563433a04de1be440662c4f7ca7adf2b71
   void draw(CanvasRenderingContext2D context) {
     ImageElement image = isFiringRoket ? firingRockets : rocket;
     context.save();
@@ -333,8 +245,8 @@ class Game {
       window.requestAnimationFrame(drawAll);
     }
   }
-  double getRandomDouble(double min, double max) =>
-      randNum.nextDouble() * (max - min) + min;
+  double getRandomDouble(double min, double max) => randNum.nextDouble() * (max
+      - min) + min;
 
   int getRandomInt(int min, int max) => randNum.nextInt(max - min) + min;
 
@@ -348,13 +260,8 @@ class Game {
         x = getRandomDouble(0.0, 750.0);
         y = getRandomDouble(0.0, 350.0);
       }
-<<<<<<< HEAD
       astreoids.add(new Astreoid(x, y, randNum.nextInt(50), getRandomInt(1, 4))
           );
-=======
-      astreoids.add(
-          new Astreoid(x, y, randNum.nextInt(50), getRandomInt(1, 4)));
->>>>>>> 8cace1563433a04de1be440662c4f7ca7adf2b71
     }
   }
 
@@ -372,13 +279,9 @@ class Game {
     }
     if (keyEvent.keyCode == KeyCode.SPACE) {
       bullets.add(new Bullet(ship));
-<<<<<<< HEAD
       ship.canFire = false;
     }
     ship.canFire = true;
-=======
-    }
->>>>>>> 8cace1563433a04de1be440662c4f7ca7adf2b71
   }
 
   void onNotKeyPress(KeyboardEvent k) {
@@ -396,66 +299,59 @@ class Game {
       astreoids.add(new Astreoid(astreoids[j].xCoordinate,
           astreoids[j].yCoordinate, randNum.nextInt(50), choice - 1));
 
-      astreoids.add(new Astreoid(astreoids[j].xCoordinate + 0.5,
-          astreoids[j].yCoordinate + 0.5, randNum.nextInt(50), choice - 1));
+      astreoids.add(new Astreoid(astreoids[j].xCoordinate + 1,
+          astreoids[j].yCoordinate + 1, randNum.nextInt(50), choice - 1));
       astreoids.removeAt(j);
     }
 
   }
 
   void drawAll(num _) {
-<<<<<<< HEAD
-    for (int i = 0; i < bullets.length; ++i) {
-      bool hit = false;
-      for (int j = 0; j < astreoids.length; ++j) {
-        if (astreoids[j].hitTheBullet(bullets[i])) {
-          createTwoAstreoids(j, astreoids[j].choice);
-          hit = true;
-          break;
+
+      for (int i = 0; i < bullets.length; ++i) {
+        bool hit = false;
+        for (int j = 0; j < astreoids.length; ++j) {
+          if (astreoids[j].hitTheBullet(bullets[i])) {
+            createTwoAstreoids(j, astreoids[j].choice);
+            hit = true;
+            break;
+          }
+        }
+        if (hit) {
+          bullets.removeAt(i);
         }
       }
-      if (hit) {
-        bullets.removeAt(i);
+
+      for (Astreoid a in astreoids) {
+        a.animate();
       }
-    }
 
-=======
->>>>>>> 8cace1563433a04de1be440662c4f7ca7adf2b71
-    for (Astreoid a in astreoids) {
-      a.animate();
-    }
-
-<<<<<<< HEAD
-    // if bullet is out of screen or collided with asteroids, it should be removed.
-=======
-
-        // if bullet is out of screen or collided with asteroids, it should be removed.
->>>>>>> 8cace1563433a04de1be440662c4f7ca7adf2b71
-    for (int i = 0; i < bullets.length; i++) {
-      if (bullets[i].outOfScreen(room)) {
-        bullets.removeAt(i);
+      // if bullet is out of screen or collided with asteroids, it should be removed.
+      for (int i = 0; i < bullets.length; i++) {
+        if (bullets[i].outOfScreen(room)) {
+          bullets.removeAt(i);
+        }
       }
+
+      for (Bullet b in bullets) {
+        b.animate();
+      }
+
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      // draw everything.
+      room.draw(context);
+      for (Bullet b in bullets) {
+        b.draw(context);
+      }
+      ship.draw(context);
+      ship.move();
+      for (Astreoid a in astreoids) {
+        a.draw(context);
+      }
+      requestRedraw();
     }
 
-    for (Bullet b in bullets) {
-      b.animate();
-    }
-
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    // draw everything.
-    room.draw(context);
-    for (Bullet b in bullets) {
-      b.draw(context);
-    }
-    ship.draw(context);
-    ship.move();
-    for (Astreoid a in astreoids) {
-      a.draw(context);
-    }
-    requestRedraw();
   }
-
-}
 
 void main() {
   CanvasElement canvas = querySelector("#area");
